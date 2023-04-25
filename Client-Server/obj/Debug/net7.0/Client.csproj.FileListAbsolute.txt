@@ -1,0 +1,15 @@
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/bin/Debug/net7.0/Client
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/bin/Debug/net7.0/Client.deps.json
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/bin/Debug/net7.0/Client.runtimeconfig.json
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/bin/Debug/net7.0/Client.dll
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/bin/Debug/net7.0/Client.pdb
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/Client.csproj.AssemblyReference.cache
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/Client.GeneratedMSBuildEditorConfig.editorconfig
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/Client.AssemblyInfoInputs.cache
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/Client.AssemblyInfo.cs
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/Client.csproj.CoreCompileInputs.cache
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/Client.dll
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/refint/Client.dll
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/Client.pdb
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/Client.genruntimeconfig.cache
+/Users/orestonyshchenko/Projects/Client-Server/Client-Server/obj/Debug/net7.0/ref/Client.dll
