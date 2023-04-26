@@ -2,14 +2,33 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 
 namespace Server
 {
+    public class GeometryShape
+    {
+        public int ID;
+        public string Name;
+        public double Area;
+        public double Perimeter;
+
+        public GeometryShape(int id, string name, double area, double perimeter)
+        {
+            ID = id;
+            Name = name;
+            Area = area;
+            Perimeter = perimeter;
+        }
+    }
+
+
     class Program
     {
-        static Dictionary<string, (double, double)> shapes = new Dictionary<string, (double, double)>(); // Stores shape name, area, perimeter
+        //to do add object geometry shape
+        static List<GeometryShape> shapes = new List<GeometryShape>(); // Stores shape name, area, perimeter
 
         static void Main(string[] args)
         {
@@ -63,16 +82,20 @@ namespace Server
                             string shapeName = tokens[1];
                             double area = double.Parse(tokens[2]);
                             double perimeter = double.Parse(tokens[3]);
-                            shapes[shapeName] = (area, perimeter);
+                            GeometryShape geometryShape = new GeometryShape(shapes.Count,shapeName, area,perimeter);
+                            shapes.Add(geometryShape);
                             SendMessage(stream, "Shape added successfully");
                         }
                         else if (command == "search")
                         {
                             string shapeName = tokens[1];
-                            if (shapes.ContainsKey(shapeName))
+                            List<GeometryShape> searchResults = shapes.Where(x => x.Name == shapeName).ToList();
+                            if (searchResults.Count() >= 1)
                             {
-                                (double area, double perimeter) = shapes[shapeName];
-                                SendMessage(stream, $"{shapeName} - Area: {area}, Perimeter: {perimeter}");
+                                foreach (var item in searchResults)
+                                {
+                                    SendMessage(stream, $"ID = {item.ID}, {item.Name} - Area: {item.Area}, Perimeter: {item.Perimeter} \n");
+                                }
                             }
                             else
                             {
@@ -81,67 +104,80 @@ namespace Server
                         }
                         else if (command == "delete")
                         {
-                            string shapeName = tokens[1];
-                            if (shapes.ContainsKey(shapeName))
+                            string shapeID = tokens[1];
+                            int id;
+                            int.TryParse(shapeID, out id);
+                            if (id >= 0)
                             {
-                                shapes.Remove(shapeName);
-                                SendMessage(stream, $"{shapeName} removed successfully");
+                                GeometryShape itemToDelete = shapes.Where(x => x.ID == id).First();
+                                if (itemToDelete != null)
+                                {
+                                    shapes.Remove(itemToDelete);
+                                    SendMessage(stream, $"{itemToDelete.Name} with ID {itemToDelete.ID} was removed successfully");
+                                }
+                                else
+                                {
+                                    SendMessage(stream, $"Shape with ID = {id} not found");
+                                }
                             }
-                            else
-                            {
-                                SendMessage(stream, $"Shape {shapeName} not found");
-                            }
+                            else SendMessage(stream, $"Wrong ID entered!");
+
                         }
                         else if (command == "edit")
                         {
-                            string shapeName = tokens[1];
-                            if (shapes.ContainsKey(shapeName))
+                            string shapeID = tokens[1];
+                            int id;
+                            int.TryParse(shapeID, out id);
+                            if (id >= 0)
                             {
-                                double newArea = double.Parse(tokens[2]);
-                                double newPerimeter = double.Parse(tokens[3]);
-                                shapes[shapeName] = (newArea, newPerimeter);
-                                SendMessage(stream, $"{shapeName} edited successfully");
+                                GeometryShape itemToEdit = shapes.Where(x => x.ID == id).First();
+                                if (itemToEdit != null)
+                                {
+                                    shapes.Remove(itemToEdit);
+                                    double newArea = double.Parse(tokens[2]);
+                                    double newPerimeter = double.Parse(tokens[3]);
+                                    GeometryShape geometryShape = new GeometryShape(itemToEdit.ID, itemToEdit.Name, newArea, newPerimeter);
+                                    shapes.Add(geometryShape);
+                                    SendMessage(stream, $"Shape with ID {itemToEdit.ID} was edited successfully!\nNew values are: {itemToEdit.Name} - area {newArea}, perimeter {newPerimeter}");
+                                }
+                                else
+                                {
+                                    SendMessage(stream, $"Shape with ID {id} not found");
+                                }
                             }
-                            else
-                            {
-                                SendMessage(stream, $"Shape {shapeName} not found");
-                            }
+                            else SendMessage(stream, $"Wrong ID!");
                         }
                         else if (command == "sort")
                         {
                             string field = tokens[1];
-                            List<KeyValuePair<string, (double, double)>> sortedShapes = null;
-                            if (field == "name")
+                            List<GeometryShape> sortedShapes = null;
+                            if (field == "id")
                             {
-                                sortedShapes = new List<KeyValuePair<string, (double, double)>>(shapes);
-                                sortedShapes.Sort(delegate (KeyValuePair<string, (double, double)> x, KeyValuePair<string, (double, double)> y)
-                                {
-                                    return x.Key.CompareTo(y.Key);
-                                });
+                                sortedShapes = new List<GeometryShape>(shapes);
+                                sortedShapes.OrderBy(x => x.ID);
+                            }
+                            else if (field == "name")
+                            {
+                                sortedShapes = new List<GeometryShape>(shapes);
+                                sortedShapes.OrderBy(x => x.Name);
                             }
                             else if (field == "area")
                             {
-                                sortedShapes = new List<KeyValuePair<string, (double, double)>>(shapes);
-                                sortedShapes.Sort(delegate (KeyValuePair<string, (double, double)> x, KeyValuePair<string, (double, double)> y)
-                                {
-                                    return x.Value.Item1.CompareTo(y.Value.Item1);
-                                });
+                                sortedShapes = new List<GeometryShape>(shapes);
+                                sortedShapes.OrderBy(x => x.Area);
                             }
                             else if (field == "perimeter")
                             {
-                                sortedShapes = new List<KeyValuePair<string, (double, double)>>(shapes);
-                                sortedShapes.Sort(delegate (KeyValuePair<string, (double, double)> x, KeyValuePair<string, (double, double)> y)
-                                {
-                                    return x.Value.Item2.CompareTo(y.Value.Item2);
-                                });
+                                sortedShapes = new List<GeometryShape>(shapes);
+                                sortedShapes.OrderBy(x => x.Perimeter);
                             }
 
                             if (sortedShapes != null)
                             {
                                 SendMessage(stream, "Sorted Shapes:");
-                                foreach (KeyValuePair<string, (double, double)> kvp in sortedShapes)
+                                foreach (var item in sortedShapes)
                                 {
-                                    SendMessage(stream, $"{kvp.Key} - Area: {kvp.Value.Item1}, Perimeter: {kvp.Value.Item2}");
+                                    SendMessage(stream, $"{item.ID}, {item.Name} - Area: {item.Area}, Perimeter: {item.Perimeter}\n");
                                 }
                             }
                             else
